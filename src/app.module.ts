@@ -3,6 +3,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { RoomController } from './room/room.controller'
 import { RedisModule } from '@nestjs-modules/ioredis'
+import { WSGateway } from './ws.gateway'
 import { RoomModule } from './room/room.module'
 
 @Module({
@@ -14,6 +15,6 @@ import { RoomModule } from './room/room.module'
     RoomModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService, WSGateway]
 })
 export class AppModule {}
