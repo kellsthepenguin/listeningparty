@@ -1,8 +1,9 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Post, Put, UseGuards } from '@nestjs/common'
 import { RoomService } from './room.service'
 import { CreateRoomDto } from './dto'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { CurrentUserId } from 'src/decorators/current-user-id.decorator'
+import { JoinRoomDto } from './dto/join-room.dto'
 
 @Controller('room')
 @UseGuards(AuthGuard)
@@ -10,10 +11,19 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
-  create(
+  async create(
     @CurrentUserId() userId: string,
     @Body() createRoomDto: CreateRoomDto
   ) {
-    return this.roomService.create(userId, createRoomDto)
+    const room = await this.roomService.create(userId, createRoomDto)
+    return this.roomService.join(userId, room!)
+  }
+
+  @Put()
+  async join(
+    @CurrentUserId() userId: string,
+    @Body() joinRoomDto: JoinRoomDto
+  ) {
+    return this.roomService.join(userId, joinRoomDto)
   }
 }

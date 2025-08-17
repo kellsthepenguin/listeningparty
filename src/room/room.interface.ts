@@ -3,5 +3,6 @@ export interface Room {
   title: string // title of the room
   ownerId: string // socket id of the owner
   current: number // current second of playing song
-  playlist: [] // list of songs. e.g.) ['youtube:dQw4w9WgXcQ']
+  users: string[]
+  playlist: string[] // list of songs. e.g.) ['youtube:dQw4w9WgXcQ']
 }

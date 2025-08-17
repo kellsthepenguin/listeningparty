@@ -6,7 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets'
-import type { Socket, Server } from 'socket.io'
+import type { Server, Socket } from 'socket.io'
 import { AuthService } from 'src/auth/auth.service'
 
 @Injectable()
@@ -14,8 +14,8 @@ import { AuthService } from 'src/auth/auth.service'
 export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  @WebSocketServer() server: Server
-  private readonly logger = new Logger('ChatGateway')
+  private readonly logger = new Logger('WsGateway')
+  @WebSocketServer() private server: Server
 
   constructor(private readonly authService: AuthService) {}
 
@@ -28,4 +28,8 @@ export class WSGateway
   }
 
   handleDisconnect(client: Socket) {}
+
+  getServer() {
+    return this.server
+  }
 }

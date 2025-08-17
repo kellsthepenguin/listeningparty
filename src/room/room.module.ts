@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common'
 import { RoomController } from './room.controller'
 import { RoomService } from './room.service'
-import { AuthModule } from 'src/auth/auth.module'
+import { AuthModule } from '../auth/auth.module'
+import { WSModule } from '../ws/ws.module'
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, WSModule],
   controllers: [RoomController],
   providers: [RoomService]
 })
