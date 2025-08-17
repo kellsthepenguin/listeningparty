@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { RoomController } from './room/room.controller'
 import { RedisModule } from '@nestjs-modules/ioredis'
-import { WSGateway } from './ws.gateway'
 import { RoomModule } from './room/room.module'
+import { WSModule } from './ws/ws.module'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
   imports: [
@@ -12,9 +12,11 @@ import { RoomModule } from './room/room.module'
       type: 'single',
       url: 'redis://localhost:6379'
     }),
-    RoomModule
+    RoomModule,
+    WSModule,
+    AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService, WSGateway]
+  providers: [AppService]
 })
 export class AppModule {}

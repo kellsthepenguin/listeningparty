@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,20 +7,24 @@ import {
   WebSocketServer
 } from '@nestjs/websockets'
 import type { Socket, Server } from 'socket.io'
+import { AuthService } from 'src/auth/auth.service'
 
-@WebSocketGateway({ path: '/ws' })
+@Injectable()
+@WebSocketGateway()
 export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server
   private readonly logger = new Logger('ChatGateway')
 
+  constructor(private readonly authService: AuthService) {}
+
   afterInit() {
     this.logger.log('WS Gateway Initialized')
   }
 
-  handleConnection(client: Socket) {
-    this.logger.log(client.id)
+  async handleConnection(client: Socket) {
+    client.emit('token', await this.authService.sign(client.id))
   }
 
   handleDisconnect(client: Socket) {}
