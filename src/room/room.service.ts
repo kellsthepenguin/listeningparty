@@ -94,4 +94,31 @@ export class RoomService {
       return false
     }
   }
+
+  async addToQueue(userId: string, data: AddToQueueDto) {
+    const partialRoom = await this.redis.hmget(
+      `${this.roomPrefix}:${data.roomId}`,
+      'ownerId',
+      'playlist'
+    )
+    const ownerId = partialRoom[0]!
+    const playlist = JSON.parse(partialRoom[1]!) as Array<string>
+    const server = this.wsService.getServer()
+
+    if (ownerId !== userId) {
+      return false
+    }
+
+    playlist.push(data.songId)
+
+    await this.redis.hset(
+      `${this.roomPrefix}:${data.roomId}`,
+      'playlist',
+      JSON.stringify(playlist)
+    )
+
+    server.to(data.roomId).emit('addSong', data.songId)
+
+    return true
+  }
 }

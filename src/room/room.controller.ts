@@ -4,6 +4,7 @@ import { CreateRoomDto } from './dto'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { CurrentUserId } from 'src/decorators/current-user-id.decorator'
 import { JoinRoomDto } from './dto/join-room.dto'
+import { AddToQueueDto } from './dto/add-to-queue.dto'
 
 @Controller('room')
 @UseGuards(AuthGuard)
@@ -25,5 +26,13 @@ export class RoomController {
     @Body() joinRoomDto: JoinRoomDto
   ) {
     return this.roomService.join(userId, joinRoomDto)
+  }
+
+  @Put('/queue')
+  async addToQueue(
+    @CurrentUserId() userId: string,
+    @Body() addToQueueDto: AddToQueueDto
+  ) {
+    return this.roomService.addToQueue(userId, addToQueueDto)
   }
 }
