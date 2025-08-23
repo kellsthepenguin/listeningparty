@@ -5,6 +5,7 @@ import { CreateRoomDto } from './dto'
 import { Room } from './room.interface'
 import { JoinRoomDto } from './dto/join-room.dto'
 import { WSService } from 'src/ws/ws.service'
+import { AddToQueueDto } from './dto/add-to-queue.dto'
 
 @Injectable()
 export class RoomService {
@@ -51,16 +52,14 @@ export class RoomService {
     }
   }
 
-  async join(userId: string, roomData: JoinRoomDto): Promise<Room | null> {
+  async join(userId: string, roomData: JoinRoomDto): Promise<boolean> {
     const roomId = roomData.id
 
     if (await this.redis.exists(`${this.roomPrefix}:${roomId}`)) {
       const server = this.wsService.getServer()
       const socket = server.sockets.sockets.get(userId)
 
-      if (!socket) return null
-
-      socket.rooms.add(roomId)
+      if (!socket) return false
 
       this.redis.hset(`${this.userPrefix}:${userId}`, {
         currendRoomId: roomId
@@ -83,11 +82,18 @@ export class RoomService {
         users: JSON.stringify(users)
       })
 
-      return (await this.redis.hgetall(
-        `${this.roomPrefix}:${roomId}`
-      )) as any as Room
+      socket.join(roomId)
+
+      server
+        .to(roomId)
+        .emit(
+          'roomInfo',
+          await this.redis.hgetall(`${this.roomPrefix}:${roomId}`)
+        )
+
+      return true
     } else {
-      return null
+      return false
     }
   }
 }
