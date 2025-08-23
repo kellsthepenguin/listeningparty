@@ -82,14 +82,12 @@ export class RoomService {
         users: JSON.stringify(users)
       })
 
+      socket.emit(
+        'roomInfo',
+        await this.redis.hgetall(`${this.roomPrefix}:${roomId}`)
+      )
+      server.to(roomId).emit('newUser', userId)
       socket.join(roomId)
-
-      server
-        .to(roomId)
-        .emit(
-          'roomInfo',
-          await this.redis.hgetall(`${this.roomPrefix}:${roomId}`)
-        )
 
       return true
     } else {
